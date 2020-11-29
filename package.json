@@ -1,7 +1,7 @@
 {
-  "name": "@uboot/uboot",
-  "version": "0.1.2",
-  "description": "subscription-manager - Lightweight Utility for managing Subscriptions",
+  "name": "@pawsaw/subscription-manager",
+  "version": "0.1.0",
+  "description": "Subscription Manager - Lightweight Utility for managing Subscriptions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
