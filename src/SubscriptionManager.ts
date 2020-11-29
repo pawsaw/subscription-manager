@@ -1,49 +1,91 @@
 import uuidv4 from './util/uuidv4';
 
-export type Subscription = string;
+export type SubscriptionId = string;
+export interface Subscription {
+    readonly id: SubscriptionId;
+    readonly isOpen: boolean;
+    free(): void;
+}
 
-export class SubscriptionManager<TChannel, TEventHandler extends Function> {
-  private readonly _handlerForSubscription = new Map<Subscription, TEventHandler>();
-  private readonly _subscriptionForChannel = new Map<TChannel, Subscription[]>();
+export interface SubscriptionManager<TChannel> {
+    subscribe<TEventHandler = Function>(
+        channel: TChannel,
+        eventHandler: TEventHandler,
+    ): Subscription;
+    handler<TEventHandler = Function>(channel: TChannel): TEventHandler[];
+}
 
-  constructor() {}
+class _Subscription<TChannel> implements Subscription {
+    public readonly id: SubscriptionId;
+    private _isOpen = true;
 
-  subscribe(channel: TChannel, eventHandler: TEventHandler): Subscription {
-      const subscription: Subscription = uuidv4();
-      this._handlerForSubscription.set(subscription, eventHandler);
-      this.subscriptionForChannel(channel).push(subscription);
-      return subscription;
-  }
+    constructor(private readonly sm: _SubscriptionManager<TChannel>) {
+        this.id = uuidv4();
+    }
 
-  unsubscribe(subscription: Subscription): void {
-      this._handlerForSubscription.delete(subscription);
-      for (let subscriptions of this._subscriptionForChannel.values()) {
-          const i = subscriptions.indexOf(subscription);
-          if (i >= 0) {
-              subscriptions.splice(i, 1);
-              break;
-          }
-      }
-  }
+    free(): void {
+        this.sm.unsubscribe(this);
+        this._isOpen = false;
+    }
 
-  handlerForChannel(channel: TChannel): TEventHandler[] {
-      const subscriptions = this.subscriptionForChannel(channel);
-      if (subscriptions.length === 0) {
-          return [];
-      }
-      return subscriptions.map((sub) => this.handlerForSubscription(sub));
-  }
+    get isOpen(): boolean {
+        return this._isOpen;
+    }
 
-  private handlerForSubscription(subscription: Subscription): TEventHandler {
-      return this._handlerForSubscription.get(subscription)!;
-  }
+    close(): void {
+        this._isOpen = false;
+    }
+}
 
-  private subscriptionForChannel(channel: TChannel): Subscription[] {
-      let subscriptions: Subscription[] | undefined = this._subscriptionForChannel.get(channel);
-      if (!subscriptions) {
-          subscriptions = [];
-          this._subscriptionForChannel.set(channel, subscriptions);
-      }
-      return subscriptions;
-  }
+class _SubscriptionManager<TChannel> implements SubscriptionManager<TChannel> {
+    private readonly _handlerForSubscription = new Map<SubscriptionId, any>();
+    private readonly _subscriptionForChannel = new Map<TChannel, SubscriptionId[]>();
+
+    subscribe<TEventHandler = Function>(
+        channel: TChannel,
+        eventHandler: TEventHandler,
+    ): Subscription {
+        const subscription = new _Subscription(this);
+        this._handlerForSubscription.set(subscription.id, eventHandler);
+        this.subscriptionForChannel(channel).push(subscription.id);
+        return subscription;
+    }
+
+    unsubscribe(subscription: Subscription): void {
+        this._handlerForSubscription.delete(subscription.id);
+        for (let subscriptions of this._subscriptionForChannel.values()) {
+            const i = subscriptions.indexOf(subscription.id);
+            if (i >= 0) {
+                subscriptions.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    handler<TEventHandler = Function>(channel: TChannel): TEventHandler[] {
+        const subscriptionIds = this.subscriptionForChannel(channel);
+        if (subscriptionIds.length === 0) {
+            return [];
+        }
+        return subscriptionIds.map((sub) => this.handlerForSubscriptionId<TEventHandler>(sub));
+    }
+
+    private handlerForSubscriptionId<TEventHandler>(subscriptionId: SubscriptionId): TEventHandler {
+        return this._handlerForSubscription.get(subscriptionId)!;
+    }
+
+    private subscriptionForChannel(channel: TChannel): SubscriptionId[] {
+        let subscriptionIds: SubscriptionId[] | undefined = this._subscriptionForChannel.get(
+            channel,
+        );
+        if (!subscriptionIds) {
+            subscriptionIds = [];
+            this._subscriptionForChannel.set(channel, subscriptionIds);
+        }
+        return subscriptionIds;
+    }
+}
+
+export function createSubscriptionManager<TChannel = string>(): SubscriptionManager<TChannel> {
+    return new _SubscriptionManager<TChannel>();
 }

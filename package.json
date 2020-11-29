@@ -1,31 +1,31 @@
 {
-  "name": "@pawsaw/subscription-manager",
-  "version": "0.1.1",
-  "description": "Subscription Manager - Lightweight Utility for managing Subscriptions",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pawsaw/subscription-manager.git"
-  },
-  "author": "Pawel Sawicki",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/pawsaw/subscription-manager/issues"
-  },
-  "homepage": "https://github.com/pawsaw/subscription-manager.git#readme",
-  "devDependencies": {
-    "@types/jest": "^26.0.14",
-    "jest": "^26.4.2",
-    "ts-jest": "^26.4.0",
-    "typescript": "^4.0.3"
-  }
+    "name": "@pawsaw/subscription-manager",
+    "version": "0.2.0",
+    "description": "Subscription Manager - Lightweight Utility for managing Subscriptions",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build",
+        "test": "jest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pawsaw/subscription-manager.git"
+    },
+    "author": "Pawel Sawicki",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/pawsaw/subscription-manager/issues"
+    },
+    "homepage": "https://github.com/pawsaw/subscription-manager.git#readme",
+    "devDependencies": {
+        "@types/jest": "^26.0.14",
+        "jest": "^26.4.2",
+        "ts-jest": "^26.4.0",
+        "typescript": "^4.0.3"
+    }
 }
