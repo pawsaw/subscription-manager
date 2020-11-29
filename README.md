@@ -1,6 +1,6 @@
 # Subscription Manager
 
-![https://github.com/pawsaw/subscription-manager](https://github.com/pawsaw/subscription-manager/master/assets/images/subscription-manager.svg)
+![https://github.com/pawsaw/subscription-manager](https://raw.githubusercontent.com/pawsaw/subscription-manager/master/assets/images/subscription-manager.svg)
 
 ## What is it?
 
