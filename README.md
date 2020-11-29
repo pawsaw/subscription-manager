@@ -29,17 +29,17 @@ export interface ChatService {
 ... and a _Client_ using it:
 
 ```ts
-  const chatService = // ... access the instance somehow
+const chatService = // ... access the instance somehow
 
-  const onChatMessageReceived: OnChatMessageReceived = (msg: ChatMessage) => {
-    console.log(`Got new message: ${msg}`);
-  };
+const onChatMessageReceived: OnChatMessageReceived = (msg: ChatMessage) => {
+  console.log(`Got new message: ${msg}`);
+};
 
-  // start listening for incomming messages
-  const sub = chatService.onChatMessageReceived(onChatMessageReceived);
+// start listening for incomming messages
+const sub = chatService.onChatMessageReceived(onChatMessageReceived);
 
-  // and if we're not longer interested in receiving messages ...
-  sub.free();
+// and if we're not longer interested in receiving messages ...
+sub.free();
 ```
 
 As you can see here, the _ChatService_ may be a singleton (not mandatory), where **several (!) clients may want to register** to receive messages.
