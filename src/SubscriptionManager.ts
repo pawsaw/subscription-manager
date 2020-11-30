@@ -7,12 +7,18 @@ export interface Subscription {
     free(): void;
 }
 
+// type ReturnType<T> = T extends (... args: any[]) => infer T ? T : never;
+export type Parameters<T> = T extends (...args: infer T) => any ? T : never;
 export interface SubscriptionManager<TChannel> {
-    subscribe<TEventHandler = Function>(
+    subscribe<TEventHandler extends Function = Function>(
         channel: TChannel,
         eventHandler: TEventHandler,
     ): Subscription;
-    handler<TEventHandler = Function>(channel: TChannel): TEventHandler[];
+    handler<TEventHandler extends Function = Function>(channel: TChannel): TEventHandler[];
+    publish<TEventHandler extends Function = Function>(
+        channel: TChannel,
+        ...args: Parameters<TEventHandler>
+    ): void;
 }
 
 class _Subscription<TChannel> implements Subscription {
@@ -62,12 +68,19 @@ class _SubscriptionManager<TChannel> implements SubscriptionManager<TChannel> {
         }
     }
 
-    handler<TEventHandler = Function>(channel: TChannel): TEventHandler[] {
+    handler<TEventHandler extends Function = Function>(channel: TChannel): TEventHandler[] {
         const subscriptionIds = this.subscriptionForChannel(channel);
         if (subscriptionIds.length === 0) {
             return [];
         }
         return subscriptionIds.map((sub) => this.handlerForSubscriptionId<TEventHandler>(sub));
+    }
+
+    publish<TEventHandler extends Function = Function>(
+        channel: TChannel,
+        ...args: Parameters<TEventHandler>
+    ): void {
+        this.handler<TEventHandler>(channel).forEach((h: TEventHandler) => h(...args));
     }
 
     private handlerForSubscriptionId<TEventHandler>(subscriptionId: SubscriptionId): TEventHandler {

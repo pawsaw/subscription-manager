@@ -26,4 +26,42 @@ describe('Subscription Manager', () => {
         expect(fooHandlersAfterUnsubscribe).toBeDefined();
         expect(fooHandlersAfterUnsubscribe).toHaveLength(0);
     });
+
+    it('The handler should be called numerous times while publishing.', () => {
+        const handlerImpl = (n: number) => {
+            expect(n).toBeDefined();
+            expect(n).toBeGreaterThan(0);
+        };
+
+        const handler = jest.fn().mockImplementation(handlerImpl);
+
+        const sub1 = sm.subscribe('foo', handler);
+        const sub2 = sm.subscribe('foo', handler);
+
+        sm.publish<typeof handlerImpl>('foo', 1);
+        sm.publish<typeof handlerImpl>('foo', 2);
+        sm.publish<typeof handlerImpl>('foo', 3);
+
+        expect(handler).toBeCalledTimes(6);
+
+        sub1.free();
+
+        handler.mockClear();
+
+        sm.publish<typeof handlerImpl>('foo', 1);
+        sm.publish<typeof handlerImpl>('foo', 2);
+        sm.publish<typeof handlerImpl>('foo', 3);
+
+        expect(handler).toBeCalledTimes(3);
+
+        sub2.free();
+
+        handler.mockClear();
+
+        sm.publish<typeof handlerImpl>('foo', 1);
+        sm.publish<typeof handlerImpl>('foo', 2);
+        sm.publish<typeof handlerImpl>('foo', 3);
+
+        expect(handler).toBeCalledTimes(0);
+    });
 });
