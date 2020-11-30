@@ -37,7 +37,7 @@ import {
 const sm: SubscriptionManager<string> = createSubscriptionManager();
 ```
 
-Here _string_ is the data type of the channel, as default. Other data types are acceptable, but less unusual.
+Here _string_ is the data type of the channel, as default. Other data types are acceptable, but less usual.
 
 Here a Subscription Manager is created, where the channels are of the datatype _number_:
 
@@ -133,7 +133,7 @@ sub.free();
 
 As you can see here, the _ChatService_ may be a singleton (not mandatory), where **several (!) clients may want to register** to receive messages.
 
-If a client is no longer interested in receiving the messages, he wants to **unsubscribe**.
+If a client is no longer interested in receiving the messages, he wants to **free** the Subscription.
 
 Maybe you want to offer another method in the ChatService to get information about new ChatUsers, as the following example shows:
 
